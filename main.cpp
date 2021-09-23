@@ -1,8 +1,10 @@
 #include <algorithm>
 #include <ctime>
+#include <functional>
 #include <iostream>
 #include <thread>
 #include <unistd.h>
+#include <unordered_map>
 
 using namespace std;
 
@@ -76,6 +78,24 @@ int main(int argc, char **argv) {
   printf("-----Start-----\n");
 
 #if 1
+  std::unordered_map<int, std::string> m;
+  m.insert(std::make_pair(1, "1socket"));
+  printf("%s\n", m[1].c_str());
+#endif
+
+#if 0
+  std::function<void(char *)> f;
+  if (!f) {
+    printf("function is NULL\n");
+  }
+  f = [](char *str) -> void { printf("%s\n", str); };
+  f("123");
+  if (f) {
+    printf("function is not NULL\n");
+  }
+#endif
+
+#if 0
   std::string str = "PROGRAMMING_TEST";
   cout << "Size : " << str.size() << ", " << str << endl;
   string::iterator it = std::remove(str.begin(), str.end(), 'M');
