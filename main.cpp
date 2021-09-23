@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <ctime>
 #include <iostream>
 #include <thread>
@@ -67,8 +68,21 @@ void myFunc2(int n) {
 }
 //////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////
+void vaFunc(int n, ...) { printf("%d\n", n); }
+//////////////////////////////////////////////////////
+
 int main(int argc, char **argv) {
   printf("-----Start-----\n");
+
+#if 1
+  std::string str = "PROGRAMMING_TEST";
+  cout << "Size : " << str.size() << ", " << str << endl;
+  string::iterator it = std::remove(str.begin(), str.end(), 'M');
+  cout << "Size : " << str.size() << ", " << str << endl;
+  str.erase(it, str.end());
+  cout << "Size : " << str.size() << ", " << str << endl;
+#endif
 
 #if 0
   myCl::myClStaticFunc();
@@ -77,7 +91,7 @@ int main(int argc, char **argv) {
   mc1.myClStaticFunc();
 #endif
 
-#if 1
+#if 0
   myCl mc1;
   thread t1(&myCl::myClFunc1, mc1);
   t1.join();
