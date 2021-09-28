@@ -62,8 +62,8 @@ void myFunc1() {
 }
 
 void myFunc2(int n) {
-  // while (1) {
-  for (int i = 0; i < 5; i++) {
+  while (1) {
+    // for (int i = 0; i < 5; i++) {
     printf("%d (%lu)\n", n, time(NULL));
     usleep(1000000);
   }
@@ -78,6 +78,27 @@ int main(int argc, char **argv) {
   printf("-----Start-----\n");
 
 #if 1
+  std::thread t1;
+
+  while (1) {
+    // printf("thread status : %d\n", t1.);
+    usleep(1000000);
+  }
+#endif
+
+#if 0
+  std::thread t1;
+  for (int i = 0; i < 10; i++) {
+    t1 = std::thread(myFunc2, i);
+    t1.detach();
+  }
+
+  while (1) {
+    usleep(1000000);
+  }
+#endif
+
+#if 0
   std::unordered_map<int, std::string> m;
   m.insert(std::make_pair(1, "1socket"));
   printf("%s\n", m[1].c_str());
