@@ -78,6 +78,11 @@ int main(int argc, char **argv) {
   printf("-----Start-----\n");
 
 #if 1
+  time_t tt = time(NULL);
+  struct tm tst = *localtime(&tt);
+#endif
+
+#if 0
   std::thread t1;
 
   while (1) {
