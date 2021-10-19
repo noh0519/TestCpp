@@ -1,7 +1,11 @@
+#include "sha1.hpp"
 #include <algorithm>
 #include <ctime>
 #include <functional>
 #include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <thread>
 #include <unistd.h>
 #include <unordered_map>
@@ -78,6 +82,56 @@ int main(int argc, char **argv) {
   printf("-----Start-----\n");
 
 #if 1
+  unsigned long int i = 0;
+  printf("%d\n", sizeof(i));
+#endif
+
+#if 0
+  // SHA1
+  uint16_t nonce = 41419;
+  std::string shared_key = "Secui00@!";
+  uint8_t secret_key[128] = {0}; // 암호화 key
+  memcpy(secret_key, shared_key.data(), shared_key.size());
+  memcpy(secret_key + shared_key.size(), &nonce, 2);
+  int32_t secret_key_len = shared_key.size() + 2;
+  uint8_t text_out[20] = {0};
+  printf("plain text : %s\n", secret_key);
+  SHA1Context sha_1;
+  int err;
+  err = SHA1Reset(&sha_1);
+  if (err != shaSuccess)
+    return err;
+  err = SHA1Input(&sha_1, (const unsigned char *)secret_key, secret_key_len);
+  if (err != shaSuccess)
+    return err;
+  err = SHA1Result(&sha_1, text_out);
+  if (err != shaSuccess)
+    return err;
+  //////////////////
+  for (int i = 0; i < 20; i++) {
+    printf("%02x", text_out[i]);
+  }
+  printf("\n");
+  printf("~!!!NBH!!!\n");
+  exit(0);
+#endif
+
+#if 0
+  std::string s1 = "aabbccddeeff";
+  unsigned char i = (unsigned char)strtoul(s1.substr(0, 2).c_str(), NULL, 16);
+  printf("%x\n", i);
+  int ii = 0;
+  int jj = ii / 2;
+  printf("%d\n", jj);
+#endif
+
+#if 0
+  std::string s1 = "1234567890";
+  std::string s2 = s1.substr(0, 4);
+  printf("%s\n", s2.c_str());
+#endif
+
+#if 0
   time_t tt = time(NULL);
   struct tm tst = *localtime(&tt);
 #endif
