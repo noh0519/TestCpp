@@ -1,8 +1,10 @@
-#include "sha1.hpp"
+#include "sha1v2.hpp"
 #include <algorithm>
 #include <ctime>
+#include <fmt/format.h>
 #include <functional>
 #include <iostream>
+#include <nlohmann/json.hpp>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -82,8 +84,29 @@ int main(int argc, char **argv) {
   printf("-----Start-----\n");
 
 #if 1
-  unsigned long int i = 0;
-  printf("%d\n", sizeof(i));
+  nlohmann::json j;
+  fmt::print("hello {}\n", 1);
+#endif
+
+#if 0
+  uint16_t nonce = 41419;
+  std::string shared_key = "Secui00@!";
+  uint8_t secret_key[128] = {0}; // 암호화 key
+  memcpy(secret_key, shared_key.data(), shared_key.size());
+  memcpy(secret_key + shared_key.size(), &nonce, 2);
+  int32_t secret_key_len = shared_key.size() + 2;
+  uint8_t text_out[20] = {0};
+  printf("plain text : %s\n", secret_key);
+  int err;
+  SHA1Context sha1;
+  err = SHA1Reset(&sha1);
+  err = SHA1Input(&sha1, (const unsigned char *)secret_key, secret_key_len);
+  err = SHA1Result(&sha1, text_out);
+  printf("descrypt text : ");
+  for (int i = 0; i < 20; i++) {
+    printf("%02x", text_out[i]);
+  }
+  printf("\n");
 #endif
 
 #if 0
