@@ -16,7 +16,7 @@ set(FMT_PATH libs/fmt/fmt)
 
 add_compile_options(-g -Wall)
 
-add_executable(testcpp main.cpp sha1.cpp sha1v2.cpp)
+add_executable(testcpp main.cpp sha1.cpp sha1v2.cpp aria.cpp)
 
 target_include_directories(testcpp
     PRIVATE

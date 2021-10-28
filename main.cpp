@@ -1,3 +1,4 @@
+#include "aria.hpp"
 #include "sha1v2.hpp"
 #include <algorithm>
 #include <ctime>
@@ -84,6 +85,41 @@ int main(int argc, char **argv) {
   printf("-----Start-----\n");
 
 #if 1
+  testEncryptAria();
+  // ARIA_test();
+#endif
+
+#if 0
+  Byte intext[10 + 1] = "0123456789";
+  Byte outtext[128] = {0};
+  Byte mk[16 + 1] = "a5c59d200b9ae44a";
+  Byte rk[16 * 17] = {0};
+  int rk_len = EncKeySetup(mk, rk, 128);
+  printf("rk : ");
+  for (int i = 0; i < 16 * 17; i++) {
+    printf("%02x", rk[i]);
+  }
+  printf("\n");
+  printf("rk_len : %d\n", rk_len);
+  Crypt(intext, rk_len, rk, outtext);
+  printf("encrypt value : ");
+  for (int i = 0; i < 17; i++) {
+    printf("%02x", outtext[i]);
+  }
+  printf("\n");
+  printf("intext : ");
+  for (int i = 0; i < 10; i++) {
+    printf("%02x", intext[i]);
+  }
+  printf("\n");
+  printf("mk : ");
+  for (int i = 0; i < 16; i++) {
+    printf("%02x", mk[i]);
+  }
+  printf("\n");
+#endif
+
+#if 0
   nlohmann::json j;
   fmt::print("hello {}\n", 1);
 #endif
