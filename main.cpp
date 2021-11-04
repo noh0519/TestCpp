@@ -4,6 +4,7 @@
 #include <ctime>
 #include <fmt/format.h>
 #include <functional>
+#include <iomanip>
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <stdio.h>
@@ -85,6 +86,26 @@ int main(int argc, char **argv) {
   printf("-----Start-----\n");
 
 #if 1
+  std::stringstream ss;
+  ss << std::setfill('0') << std::setw(2) << std::hex << 16;
+  printf("%s\n", ss.str().c_str());
+#endif
+
+#if 0
+  nlohmann::json p;
+  nlohmann::json pp1;
+  pp1["1"] = 123;
+  p.update(pp1);
+  nlohmann::json pp2;
+  pp2["2"] = 234;
+  p.update(pp2);
+  nlohmann::json pp3;
+  pp3["3"] = 345;
+  p.update(pp3);
+  std::cout << std::setw(4) << p << std::endl;
+#endif
+
+#if 0
   testEncryptAria();
   // ARIA_test();
 #endif
