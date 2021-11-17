@@ -4,12 +4,21 @@
 #include <ctime>
 #include <fmt/format.h>
 #include <functional>
+#include <ifaddrs.h>
 #include <iomanip>
 #include <iostream>
+#include <net/if.h>
+// #include <netinet/in.h>
+// #include <arpa/inet.h>
+#include <filesystem>
+#include <fstream>
+#include <netdb.h>
 #include <nlohmann/json.hpp>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/epoll.h>
+#include <sys/ioctl.h>
 #include <thread>
 #include <unistd.h>
 #include <unordered_map>
@@ -82,10 +91,124 @@ void myFunc2(int n) {
 void vaFunc(int n, ...) { printf("%d\n", n); }
 //////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////
+bool isNumber(const char *str, int length) {
+  for (int i = 0; i < length; i++) {
+    if (!std::isdigit(str[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+//////////////////////////////////////////////////////
+
 int main(int argc, char **argv) {
   printf("-----Start-----\n");
 
+#if 0
+  const char *s = "1s";
+  printf("%d\n", atoi(s));
+#endif
+
 #if 1
+  const char *conf_path = "/var/qcalog/wsd.conf";
+  const char *json_path = "/var/qcalog/wsd.json";
+  std::ifstream ifs_conf(conf_path);
+  std::string line = "";
+  char section[64] = {0};
+  char key[64] = {0};
+  char value[64] = {0};
+  nlohmann::json j;
+
+  while (std::getline(ifs_conf, line)) {
+    line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
+    if (!line.empty()) {
+      if (line.find("[") != std::string::npos && line.find("]") != std::string::npos) {
+        memset(section, 0x00, 64);
+        sscanf(line.c_str(), "[%[a-z]]", section);
+        // printf("%s\n", section);
+      } else if (line.find("=") != std::string::npos) {
+        memset(key, 0x00, 64);
+        memset(value, 0x00, 64);
+        sscanf(line.c_str(), "%[^'=']=%s", key, value);
+        // printf("key : %s, value : %s\n", key, value);
+        if (isNumber(value, strlen(value))) {
+          j[section][key] = strtol(value, NULL, 10);
+        } else {
+          j[section][key] = value;
+        }
+      }
+    }
+  }
+
+  std::cout << j.dump(4) << std::endl;
+#endif
+
+#if 0
+  const char *conf_path = "/var/qcalog/wsd.conf";
+  const char *json_path = "/var/qcalog/wsd.json";
+  std::ifstream ifs_conf(conf_path);
+  std::ifstream ifs_json(json_path);
+  printf("conf : %s\n", ifs_conf.good() ? "true" : "false");
+  printf("json : %s\n", ifs_json.good() ? "true" : "false");
+#endif
+
+#if 0
+  /// get interface addresses
+  struct ifaddrs *interface_addrs = NULL;
+  if (getifaddrs(&interface_addrs) == -1) {
+    return 1;
+  }
+
+  if (!interface_addrs) {
+    return 1;
+  }
+
+  int32_t sd = socket(PF_INET, SOCK_DGRAM, 0);
+  if (sd < 0) {
+    /// free memory allocated by getifaddrs
+    freeifaddrs(interface_addrs);
+    return 1;
+  }
+
+  /// get MAC address for each interface
+  for (struct ifaddrs *ifa = interface_addrs; ifa != NULL; ifa = ifa->ifa_next) {
+    /// print MAC address
+    if (ifa->ifa_data != 0) {
+      struct ifreq req;
+      strcpy(req.ifr_name, ifa->ifa_name);
+      if (ioctl(sd, SIOCGIFHWADDR, &req) != -1) {
+        uint8_t *mac = (uint8_t *)req.ifr_ifru.ifru_hwaddr.sa_data;
+        printf("%s:MAC[%02X:%02X:%02X:%02X:%02X:%02X]\n", ifa->ifa_name, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+      }
+    }
+
+    /// print IP address
+    if (ifa->ifa_addr != 0) {
+      int family = ifa->ifa_addr->sa_family;
+      if (family == AF_INET || family == AF_INET6) {
+        char host[NI_MAXHOST];
+        if (getnameinfo(ifa->ifa_addr, (family == AF_INET) ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6), host, NI_MAXHOST,
+                        NULL, 0, NI_NUMERICHOST) == 0) {
+          printf("%s:Address Family:[%d%s]:IP[%s]\n", ifa->ifa_name, family,
+                 (family == AF_PACKET)  ? " (AF_PACKET)"
+                 : (family == AF_INET)  ? " (AF_INET)"
+                 : (family == AF_INET6) ? " (AF_INET6)"
+                                        : "",
+                 host);
+        }
+      }
+    }
+  }
+
+  /// close socket
+  close(sd);
+
+  /// free memory allocated by getifaddrs
+  freeifaddrs(interface_addrs);
+#endif
+
+#if 0
   std::stringstream ss;
   ss << std::setfill('0') << std::setw(2) << std::hex << 16;
   printf("%s\n", ss.str().c_str());
